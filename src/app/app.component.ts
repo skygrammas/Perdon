@@ -5,7 +5,7 @@ import { GameBoard } from './models/gameboard';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
-}
+})
 
 export class AppComponent {
   title = 'perdon-angular';
@@ -63,7 +63,7 @@ export class Circle {
   public line_width = 2;
   public color = 'red';
 
-  constructor(x:number, y:number, radius:number, color:string='red', line_width:number=2){
+  constructor(x: number, y: number, radius: number, color: string = 'red', line_width: number = 2) {
     this.x = x;
     this.y = y;
     this.radius = radius;
@@ -76,7 +76,7 @@ export class Circle {
     ctx.beginPath();
     ctx.strokeStyle = this.color;
     ctx.lineWidth = this.line_width;
-    ctx.arc(this.x, this.y, this.radius, 0, 2* Math.PI);
+    ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
     ctx.stroke();
     ctx.restore();
   }
@@ -91,8 +91,8 @@ export class CanvasAnimation {
 
   draw() {
     this.context.fillStyle = 'black';
-    this.context.fillRect(0, 0, 1440, 2560)
-    let myCircle: Circle = new Circle(50, 75, 5, 'white', '2');
+    this.context.fillRect(0, 0, 1440, 2560);
+    const myCircle: Circle = new Circle(50, 75, 5, 'white', 2);
     myCircle.draw(this.context);
     window.requestAnimationFrame(() => this.draw());
   }
@@ -102,6 +102,6 @@ export class CanvasAnimation {
 window.onload = function() {
   console.log('here we are');
   const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('gameCanvas');
-  new CanvasAnimation(canvas);
-}
+  const _ = new CanvasAnimation(canvas);
+};
 
