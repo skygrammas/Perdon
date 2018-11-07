@@ -45,6 +45,9 @@ export class GameBoard {
     private static generateStates(stateFileData: string) {
         console.log('Reading States..');
         const lines = stateFileData.split('\n');
+        lines.forEach(line => {
+            const component = line.split('|');
+        });
     }
 
 
