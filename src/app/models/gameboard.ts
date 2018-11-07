@@ -10,17 +10,19 @@ export class GameBoard {
     challenge: State;
     players: Player[];
 
-    constructor(cardFileData: string) {
-        GameBoard.generateCards(this.stepCards, this.transitionCard, cardFileData);
-        GameBoard.generateStates();
-        console.log(this.stepCards.length);
-        console.log(this.transitionCard.length);
+    constructor() {}
+
+    public static generateGame(cardFileData: string, stateFileData: string): GameBoard {
+        const game = new GameBoard();
+        GameBoard.generateCards(game.stepCards, game.transitionCard, cardFileData);
+        GameBoard.generateStates(stateFileData);
+        return game;
     }
 
 
     private static generateCards(stepCards: StepCard[], transitionCards: TransitionCard[], cardFileData: string) {
         console.log('Loading Cards...');
-        const lines = cardFileData.toString().split('\n');
+        const lines = cardFileData.split('\n');
         lines.forEach(line => {
             const component = line.split('|');
             // console.log(component);
@@ -40,8 +42,9 @@ export class GameBoard {
         });
     }
 
-    private static generateStates() {
+    private static generateStates(stateFileData: string) {
         console.log('Reading States..');
+        const lines = stateFileData.split('\n');
     }
 
 
