@@ -1,0 +1,10 @@
+step|0|5
+step|1|20
+step|2|10
+step|3|5
+transition|epsilon|5
+transition|stop|5
+transition|Perdon|5
+transition|1|15
+transition|2|15
+transition|3|15
