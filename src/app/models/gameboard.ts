@@ -98,4 +98,9 @@ export class GameBoard {
     public currentPlayer() {
         return this.players[0];
     }
+
+    public addNewPlayer(color: string, name: string) {
+        this.players.push(new Player(name, this.start, color));
+    }
+
 }

@@ -1,4 +1,6 @@
 <div>
-  <input type="file" (change)="changeListener($event)" multiple>
+  <input *ngIf="game == null" type="file" (change)="changeListener($event)" multiple>
   <canvas id="gameCanvas" style="height:100%; width:100%"></canvas>
+  <h3>Current Player: {{currentPlayer}}</h3>
+  <button *ngIf="game != null" (click)="playerDrawStepCard()">Draw Step Card</button>
 </div>

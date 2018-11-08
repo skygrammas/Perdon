@@ -11,6 +11,8 @@ export class AppComponent {
   title = 'perdon-angular';
   game: GameBoard;
 
+  currentPlayer = 'No player';
+
   constructor() {}
 
   async changeListener(event) {
@@ -35,6 +37,9 @@ export class AppComponent {
         });
       }
       this.game = GameBoard.generateGame(cardsFileContents, statesFileContents);
+      this.game.addNewPlayer('green', 'Player 1');
+      this.game.addNewPlayer('blue', 'Player 2');
+      this.currentPlayer = this.game.currentPlayer().name;
     } else {
       console.error('Too many files or no files were read.');
     }
@@ -52,6 +57,13 @@ export class AppComponent {
       };
       temporaryFileReader.readAsText(inputFile);
     });
+  }
+
+  playerDrawStepCard() {
+    const currentPlayer = this.game.currentPlayer();
+    const stepCard = this.game.drawStepCard();
+    //render the card in the UI
+    console.log(stepCard.step);
   }
 
 }
