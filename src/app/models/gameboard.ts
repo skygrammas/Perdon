@@ -8,6 +8,7 @@ export class GameBoard {
     start: State;
     end: State;
     challenge: State;
+    states: State[];
     private players: Player[];
 
     constructor() {
@@ -56,7 +57,7 @@ export class GameBoard {
             const coord = component[2].split(' ');
             const trans = component[1].split(' ').filter(s => s !== '-1');
             transitions.push({key: component[0], trans: trans });
-            const state = new State(component[0], component[3], parseInt(coord[0], 10),  parseInt(coord[0], 10));
+            const state = new State(component[0], component[3], parseInt(coord[0], 10),  parseInt(coord[1], 10));
             tempStates.push(state);
         });
         transitions.forEach((element, i) => {
@@ -69,6 +70,7 @@ export class GameBoard {
                 }
             });
             tempStates[i].possibleTransitions = stateTransitions;
+            game.states = tempStates;
             if (tempStates[i].typeOfState === 'Start') {
                 game.start = tempStates[i];
             } else if (tempStates[i].typeOfState === 'Challenge') {

@@ -20,6 +20,7 @@ export class AppComponent {
   transitionCards: TransitionCard[] = [];
   gameEnded = false;
   transitionCardsActive = false;
+  private canvasBoard: CanvasBoard;
   constructor() {}
 
   async changeListener(event) {
@@ -47,6 +48,8 @@ export class AppComponent {
       this.game.addNewPlayer('green', 'Player 1');
       this.game.addNewPlayer('blue', 'Player 2');
       this.currentPlayer = this.game.currentPlayer().name;
+      this.canvasBoard = new CanvasBoard(this.game.states);
+      this.renderBoard();
     } else {
       console.error('Too many files or no files were read.');
     }
@@ -91,6 +94,7 @@ export class AppComponent {
         player.pieceLocation = player.pieceLocation.possibleTransitions[number - 1];
         this.transitionCards.filter(item => item !== card);
         console.log('Move Complete');
+        this.renderBoard();
       } else {
         console.log('impossible move');
       }
@@ -112,19 +116,18 @@ export class AppComponent {
   }
 
   renderBoard() {
-
+    this.canvasBoard.renderBoard(this.game.currentPlayer().pieceLocation, this.game.currentPlayer().color);
   }
-
 }
 
-export class Circle {
+export class Ellipse {
   public x = 0;
   public y = 0;
   public radius = 10;
   public line_width = 2;
   public color = 'red';
 
-  constructor(x: number, y: number, radius: number, color: string = 'red', line_width: number = 2) {
+  constructor(x: number, y: number, color: string = 'red', radius: number = 50, line_width: number = 2) {
     this.x = x;
     this.y = y;
     this.radius = radius;
@@ -137,26 +140,60 @@ export class Circle {
     ctx.beginPath();
     ctx.strokeStyle = this.color;
     ctx.lineWidth = this.line_width;
-    ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+    ctx.ellipse(this.x, this.y, this.radius, this.radius * 0.6, 0, 0, 2 * Math.PI);
     ctx.stroke();
     ctx.restore();
   }
+};
+
+function draw_player(context: CanvasRenderingContext2D, color: string, x:number, y:number){
+  context.beginPath()
+  context.fillStyle = color;
+  context.moveTo(x, y);
+  context.lineTo(x+20, y+20);
+  context.lineTo(x-20, y+20);
+  context.lineTo(x, y);
+  context.fillStyle = color
+  context.fill();
+  context.stroke();
 }
 
 export class CanvasBoard {
   private readonly context: CanvasRenderingContext2D;
+  private readonly states: State[];
 
-  constructor() {
+  constructor (states: State[]) {
     this.context = canvas.getContext('2d');
+    this.states = states;
   }
 
-  renderBoard(radius: number) {
+  renderBoard(pieceLocation: State, pieceColor: string) {
     this.context.clearRect(0, 0, 1280, 720);
     this.context.fillStyle = 'grey';
     this.context.fillRect(0, 0, 1280, 720);
 
-    const myCircle: Circle = new Circle(50, 75, radius, 'white', 2);
-    myCircle.draw(this.context);
+    for (let i = 0; i < this.states.length; i++){
+      let x = this.states[i].xCoord * 130 + 100;
+      let y = this.states[i].yCoord * 100 + 72;
+
+      // If the state falls in the transition state of current players make the color red
+      let color;
+      if (pieceLocation === this.states[i]){
+        const x_pad  = Math.random() * 5;
+        const y_pad = Math.random() * 5;
+        draw_player(this.context, pieceColor, x + x_pad, y + y_pad);
+        color = 'blue';
+      } else if (pieceLocation.possibleTransitions.includes(this.states[i])) {
+        console.log('player found');
+         color = 'red';
+      } else {
+         color = 'green';
+      }
+
+      const a_ellipse = new Ellipse(x, y, color);
+      a_ellipse.draw(this.context);
+    }
+
   }
 }
 
@@ -165,9 +202,5 @@ window.onload = function() {
   canvas = <HTMLCanvasElement>document.getElementById('gameCanvas');
   canvas.height = window.innerHeight;
   canvas.width = window.innerWidth;
-
-  const board = new CanvasBoard();
-  board.renderBoard(100);
-  board.renderBoard(100);
 };
 
