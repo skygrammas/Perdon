@@ -1,6 +1,16 @@
 <div>
   <input *ngIf="game == null" type="file" (change)="changeListener($event)" multiple>
   <canvas id="gameCanvas"></canvas>
-  <h3>Current Player: {{currentPlayer}}</h3>
-  <button *ngIf="game != null" (click)="playerDrawStepCard()">Draw Step Card</button>
+  <div *ngIf="game != null">
+    <h3>Current Player: {{currentPlayer}}</h3>
+    <button *ngIf="stepCard == null" (click)="playerDrawStepCard()">Draw Step Card</button>
+    <h4 *ngIf="stepCard != null">Step Card: {{stepCard.step}}</h4>
+    <button *ngIf="stepCard != null && transitionCardsActive" (click)="playerDrawTransitionCards()">Draw Transition Card</button>
+    <div *ngFor="let card of transitionCards">
+      <h4>Transition Card: {{card.transition}}</h4>
+      <button (click)="useTransitionCard(card)">Use Card</button>
+    </div>
+    <h4 *ngFor="let card of transitionCards">Transition Card: {{card.transition}}</h4>
+    <button *ngIf="transitionCards.length == 0" (click)="endTurn()">End Turn</button>
+  </div>
 </div>
