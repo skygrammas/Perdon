@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { GameBoard } from './models/gameboard';
+import { State } from './models/states';
+
+let canvas: HTMLCanvasElement;
 
 @Component({
   selector: 'app-root',
@@ -66,6 +69,10 @@ export class AppComponent {
     console.log(stepCard.step);
   }
 
+  renderBoard() {
+
+  }
+
 }
 
 export class Circle {
@@ -94,26 +101,31 @@ export class Circle {
   }
 }
 
-export class CanvasAnimation {
+export class CanvasBoard {
   private readonly context: CanvasRenderingContext2D;
-  constructor(private readonly canvas: HTMLCanvasElement) {
-    this.context = this.canvas.getContext('2d');
-    window.requestAnimationFrame(() => this.draw());
+
+  constructor() {
+    this.context = canvas.getContext('2d');
   }
 
-  draw() {
-    this.context.fillStyle = 'black';
-    this.context.fillRect(0, 0, 1440, 2560);
-    const myCircle: Circle = new Circle(50, 75, 5, 'white', 2);
+  renderBoard(radius: number) {
+    this.context.clearRect(0, 0, 1280, 720);
+    this.context.fillStyle = 'grey';
+    this.context.fillRect(0, 0, 1280, 720);
+
+    const myCircle: Circle = new Circle(50, 75, radius, 'white', 2);
     myCircle.draw(this.context);
-    window.requestAnimationFrame(() => this.draw());
   }
 }
 
 
 window.onload = function() {
-  console.log('here we are');
-  const canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('gameCanvas');
-  const _ = new CanvasAnimation(canvas);
+  canvas = <HTMLCanvasElement>document.getElementById('gameCanvas');
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+
+  const board = new CanvasBoard();
+  board.renderBoard(100);
+  board.renderBoard(100);
 };
 
