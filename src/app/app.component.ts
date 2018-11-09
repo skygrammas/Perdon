@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { GameBoard } from './models/gameboard';
+import { TransitionCard, StepCard } from './models/cards';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,10 @@ export class AppComponent {
   game: GameBoard;
 
   currentPlayer = 'No player';
-
+  stepCard: StepCard;
+  transitionCards: TransitionCard[] = [];
+  gameEnded = false;
+  transitionCardsActive = false;
   constructor() {}
 
   async changeListener(event) {
@@ -60,10 +64,48 @@ export class AppComponent {
   }
 
   playerDrawStepCard() {
-    const currentPlayer = this.game.currentPlayer();
     const stepCard = this.game.drawStepCard();
-    //render the card in the UI
-    console.log(stepCard.step);
+    this.stepCard = stepCard;
+    this.transitionCards = [];
+    if ( parseInt(stepCard.step, 10) > 0 ) {
+      this.transitionCardsActive = true;
+    }
+  }
+
+  playerDrawTransitionCards() {
+    const stepsCount = parseInt(this.stepCard.step, 10);
+    for (let i = 0; i < stepsCount; i++) {
+      this.transitionCards.push(this.game.drawTransitionCard());
+    }
+  }
+
+  useTransitionCard(card: TransitionCard) {
+    const player = this.game.currentPlayer();
+    // handle special transitions
+    if (card.transition === '1' || card.transition === '2' || card.transition === '3') {
+      const number = parseInt(card.transition, 10);
+      if (player.pieceLocation.possibleTransitions.length >= number - 1 ) {
+        player.pieceLocation = player.pieceLocation.possibleTransitions[number - 1];
+        this.transitionCards.filter(item => item !== card);
+        console.log('Move Complete');
+      } else {
+        console.log('impossible move');
+      }
+    } else {
+      console.log('special card');
+    }
+  }
+
+  endTurn() {
+    this.gameEnded = this.game.currentPlayer().pieceLocation.typeOfState === 'End';
+    if (this.gameEnded) {
+      return;
+    }
+    this.game.nextPlayer();
+    this.currentPlayer = this.game.currentPlayer().name;
+    this.stepCard = null;
+    this.transitionCards = [];
+    this.transitionCardsActive = false;
   }
 
 }

@@ -20,6 +20,7 @@ export class GameBoard {
         const game = new GameBoard();
         GameBoard.generateCards(game, cardFileData);
         GameBoard.generateStates(stateFileData, game);
+        game.shuffleCards();
         return game;
     }
 
@@ -76,6 +77,20 @@ export class GameBoard {
                 game.end = tempStates[i];
             }
         });
+    }
+    // https://stackoverflow.com/a/12646864
+    private static shuffleArray<T>(array: T[]) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    private shuffleCards() {
+        GameBoard.shuffleArray(this.stepCards);
+        GameBoard.shuffleArray(this.transitionCard);
     }
 
     public drawStepCard(): StepCard {
