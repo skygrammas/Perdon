@@ -10,7 +10,6 @@
       <h4>Transition Card: {{card.transition}}</h4>
       <button (click)="useTransitionCard(card)">Use Card</button>
     </div>
-    <h4 *ngFor="let card of transitionCards">Transition Card: {{card.transition}}</h4>
     <button *ngIf="transitionCards.length == 0" (click)="endTurn()">End Turn</button>
   </div>
 </div>

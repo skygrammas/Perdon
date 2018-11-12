@@ -92,15 +92,27 @@ export class AppComponent {
       const number = parseInt(card.transition, 10);
       if (player.pieceLocation.possibleTransitions.length >= number - 1 ) {
         player.pieceLocation = player.pieceLocation.possibleTransitions[number - 1];
-        this.transitionCards.filter(item => item !== card);
-        console.log('Move Complete');
+        this.transitionCards = this.transitionCards.filter(item => item !== card);
         this.renderBoard();
       } else {
         console.log('impossible move');
       }
     } else {
-      console.log('special card');
+      if (card.transition === 'epsilon') {
+        console.log('Epsilon');
+        // need to make user choose any state
+      }
+      if (card.transition === 'stop') {
+        this.transitionCards = [];
+      }
+      if (card.transition === 'Perdon') {
+        player.pieceLocation = this.game.start;
+      }
     }
+    if (this.transitionCards.length === 0) {
+      this.transitionCardsActive = false;
+    }
+    this.renderBoard();
   }
 
   endTurn() {
@@ -147,13 +159,13 @@ export class Ellipse {
 };
 
 function draw_player(context: CanvasRenderingContext2D, color: string, x:number, y:number){
-  context.beginPath()
+  context.beginPath();
   context.fillStyle = color;
   context.moveTo(x, y);
-  context.lineTo(x+20, y+20);
-  context.lineTo(x-20, y+20);
+  context.lineTo(x + 20, y + 20);
+  context.lineTo(x - 20, y + 20);
   context.lineTo(x, y);
-  context.fillStyle = color
+  context.fillStyle = color;
   context.fill();
   context.stroke();
 }
@@ -172,13 +184,13 @@ export class CanvasBoard {
     this.context.fillStyle = 'grey';
     this.context.fillRect(0, 0, 1280, 720);
 
-    for (let i = 0; i < this.states.length; i++){
+    for (let i = 0; i < this.states.length; i++) {
       let x = this.states[i].xCoord * 130 + 100;
       let y = this.states[i].yCoord * 100 + 72;
 
       // If the state falls in the transition state of current players make the color red
       let color;
-      if (pieceLocation === this.states[i]){
+      if (pieceLocation === this.states[i]) {
         const x_pad  = Math.random() * 5;
         const y_pad = Math.random() * 5;
         draw_player(this.context, pieceColor, x + x_pad, y + y_pad);
