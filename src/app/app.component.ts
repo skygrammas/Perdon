@@ -156,9 +156,9 @@ export class Ellipse {
     ctx.stroke();
     ctx.restore();
   }
-};
+}
 
-function draw_player(context: CanvasRenderingContext2D, color: string, x:number, y:number){
+function draw_player(context: CanvasRenderingContext2D, color: string, x: number, y: number) {
   context.beginPath();
   context.fillStyle = color;
   context.moveTo(x, y);
@@ -185,8 +185,8 @@ export class CanvasBoard {
     this.context.fillRect(0, 0, 1280, 720);
 
     for (let i = 0; i < this.states.length; i++) {
-      let x = this.states[i].xCoord * 130 + 100;
-      let y = this.states[i].yCoord * 100 + 72;
+      const x = this.states[i].xCoord * 130 + 100;
+      const y = this.states[i].yCoord * 100 + 72;
 
       // If the state falls in the transition state of current players make the color red
       let color;
