@@ -47,7 +47,7 @@ export class AppComponent {
       }
       this.game = GameBoard.generateGame(cardsFileContents, statesFileContents);
       this.game.addNewPlayer('green', 'Player 1');
-      this.game.addNewPlayer('blue', 'Player 2');
+      // this.game.addNewPlayer('blue', 'Player 2');
       this.currentPlayer = this.game.currentPlayer().name;
       this.canvasBoard = new CanvasBoard(this.game.states);
       this.renderBoard();
@@ -108,6 +108,7 @@ export class AppComponent {
       }
       if (card.transition === 'Perdon') {
         player.pieceLocation = this.game.start;
+        this.transitionCards = this.transitionCards.filter(item => item !== card);
       }
     }
     if (this.transitionCards.length === 0) {
@@ -157,9 +158,9 @@ export class Ellipse {
     ctx.stroke();
     ctx.restore();
   }
-};
+}
 
-function draw_player(context: CanvasRenderingContext2D, color: string, x:number, y:number){
+function draw_player(context: CanvasRenderingContext2D, color: string, x: number, y: number) {
   context.beginPath();
   context.fillStyle = color;
   context.moveTo(x, y);
@@ -192,10 +193,8 @@ export class CanvasBoard {
     this.context.fillRect(0, 0, 1280, 720);
 
     for (let i = 0; i < this.states.length; i++) {
-      // get the piece location
-      let x = this.states[i].xCoord * 130 + 100;
-      let y = this.states[i].yCoord * 100 + 72;
-
+      const x = this.states[i].xCoord * 130 + 100;
+      const y = this.states[i].yCoord * 100 + 72;
       // If the state falls in the transition state of current players make the color red
       let color;
       if (playersPos.includes(this.states[i])) {
@@ -215,6 +214,37 @@ export class CanvasBoard {
     }
 
   }
+  // renderStateBoard( players: Player[]) {
+  //   pieceLocations = [] // Get the piece location ehre
+  //   pieceColors = [] // Get the corrosponding piece color here
+
+  //   this.context.clearRect(0, 0, 1280, 720);
+  //   this.context.fillStyle = 'grey';
+  //   this.context.fillRect(0, 0, 1280, 720);
+
+  //   for (let i = 0; i < this.states.length; i++) {
+  //     const x = this.states[i].xCoord * 130 + 100;
+  //     const y = this.states[i].yCoord * 100 + 72;
+
+  //     // If the state falls in the transition state of current players make the color red
+  //     let color;
+  //     if (pieceLocation === this.states[i] ) { // Check if this.states[i] is in pieceLocations
+  //       const x_pad  = Math.random() * 5;
+  //       const y_pad = Math.random() * 5;
+  //       draw_player(this.context, pieceColor, x + x_pad, y + y_pad);
+  //       color = 'blue';
+  //     } else if (pieceLocation.possibleTransitions.includes(this.states[i])) {
+  //       console.log('player found');
+  //        color = 'red';
+  //     } else {
+  //        color = 'green';
+  //     }
+
+  //     const a_ellipse = new Ellipse(x, y, color);
+  //     a_ellipse.draw(this.context);
+  //   }
+
+  // }
 }
 
 
