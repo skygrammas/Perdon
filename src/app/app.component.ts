@@ -47,7 +47,7 @@ export class AppComponent {
       }
       this.game = GameBoard.generateGame(cardsFileContents, statesFileContents);
       this.game.addNewPlayer('green', 'Player 1');
-      // this.game.addNewPlayer('blue', 'Player 2');
+      this.game.addNewPlayer('blue', 'Player 2');
       this.currentPlayer = this.game.currentPlayer().name;
       this.canvasBoard = new CanvasBoard(this.game.states);
       this.renderBoard();
@@ -130,8 +130,7 @@ export class AppComponent {
   }
 
   renderBoard() {
-    this.canvasBoard.renderBoard(this.game.currentPlayer().pieceLocation, this.game.currentPlayer().color);
-    // this.canvasBoard.renderStateBoard(this.game.getPlayers());
+    this.canvasBoard.renderBoard(this.game.players, this.game.currentPlayer());
   }
 }
 
@@ -141,13 +140,15 @@ export class Ellipse {
   public radius = 10;
   public line_width = 2;
   public color = 'red';
+  public displayNumber;
 
-  constructor(x: number, y: number, color: string = 'red', radius: number = 50, line_width: number = 2) {
+  constructor(x: number, y: number, color: string = 'red', displayNumber: number, radius: number = 50, line_width: number = 2) {
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.color = color;
     this.line_width = line_width;
+    this.displayNumber = displayNumber;
   }
 
   public draw = (ctx: CanvasRenderingContext2D): void => {
@@ -158,6 +159,11 @@ export class Ellipse {
     ctx.ellipse(this.x, this.y, this.radius, this.radius * 0.6, 0, 0, 2 * Math.PI);
     ctx.stroke();
     ctx.restore();
+
+    if (this.displayNumber !== 0){
+      ctx.font = '32px serif';
+      ctx.strokeText(this.displayNumber.toString(), this.x, this.y);
+    }
   }
 }
 
@@ -182,7 +188,13 @@ export class CanvasBoard {
     this.states = states;
   }
 
-  renderBoard(pieceLocation: State, pieceColor: string) {
+  renderBoard(players: Player[], currPlayer: Player) {
+
+    let playersPos: State[] = [];
+    for (let i in players) {
+      playersPos.push(players[i].pieceLocation);
+    }
+
     this.context.clearRect(0, 0, 1280, 720);
     this.context.fillStyle = 'grey';
     this.context.fillRect(0, 0, 1280, 720);
@@ -190,22 +202,25 @@ export class CanvasBoard {
     for (let i = 0; i < this.states.length; i++) {
       const x = this.states[i].xCoord * 130 + 100;
       const y = this.states[i].yCoord * 100 + 72;
-
       // If the state falls in the transition state of current players make the color red
       let color;
-      if (pieceLocation === this.states[i]) {
-        const x_pad  = Math.random() * 5;
-        const y_pad = Math.random() * 5;
-        draw_player(this.context, pieceColor, x + x_pad, y + y_pad);
+      let transition: number = 0;
+      if (playersPos.includes(this.states[i])) {
+        let x_pad  = Math.random() * 5;
+        let y_pad = Math.random() * 5;
+        const playerFound: Player = players[playersPos.indexOf(this.states[i])];
+        draw_player(this.context, playerFound.color, (x + x_pad), (y + y_pad));
         color = 'blue';
-      } else if (pieceLocation.possibleTransitions.includes(this.states[i])) {
-        console.log('player found');
+        x_pad = y_pad = 0;
+      } else if (currPlayer.pieceLocation.possibleTransitions.includes(this.states[i])) {
+         // find which states transitions to this state
+         transition = currPlayer.pieceLocation.possibleTransitions.indexOf(this.states[i]) + 1;
          color = 'red';
       } else {
          color = 'green';
       }
 
-      const a_ellipse = new Ellipse(x, y, color);
+      const a_ellipse = new Ellipse(x, y, color, transition);
       a_ellipse.draw(this.context);
     }
     this.renderCardDeck('Step Card', 600, 150, '#81B7FF', 'blue');
