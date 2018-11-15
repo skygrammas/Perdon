@@ -155,6 +155,8 @@ export class Ellipse {
     ctx.strokeStyle = this.color;
     ctx.lineWidth = this.line_width;
     ctx.ellipse(this.x, this.y, this.radius, this.radius * 0.6, 0, 0, 2 * Math.PI);
+    ctx.font = '48px serif'
+    ctx.strokeText('Hello', 50, 50);
     ctx.stroke();
     ctx.restore();
   }
