@@ -47,7 +47,7 @@ export class AppComponent {
       }
       this.game = GameBoard.generateGame(cardsFileContents, statesFileContents);
       this.game.addNewPlayer('green', 'Player 1');
-      // this.game.addNewPlayer('blue', 'Player 2');
+      this.game.addNewPlayer('blue', 'Player 2');
       this.currentPlayer = this.game.currentPlayer().name;
       this.canvasBoard = new CanvasBoard(this.game.states);
       this.renderBoard();
@@ -198,12 +198,15 @@ export class CanvasBoard {
       // If the state falls in the transition state of current players make the color red
       let color;
       if (playersPos.includes(this.states[i])) {
-        const x_pad  = Math.random() * 5;
-        const y_pad = Math.random() * 5;
-        draw_player(this.context, playersPos[playersPos.indexOf(this.states[i])].color, x + x_pad, y + y_pad);
+        let x_pad  = Math.random() * 5;
+        let y_pad = Math.random() * 5;
+        const playerFound: Player = players[playersPos.indexOf(this.states[i])];
+        draw_player(this.context, playerFound.color, (x + x_pad), (y + y_pad));
         color = 'blue';
+        x_pad = y_pad = 0;
       } else if (currPlayer.pieceLocation.possibleTransitions.includes(this.states[i])) {
-        console.log('player found');
+         // find which states transitions to this state
+         const transition: number = currPlayer.pieceLocation.possibleTransitions.indexOf(this.states[i]) + 1;
          color = 'red';
       } else {
          color = 'green';
