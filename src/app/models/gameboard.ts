@@ -120,4 +120,8 @@ export class GameBoard {
         this.players.push(new Player(name, this.start, color));
     }
 
+    public getPlayers(): Player[] {
+        return this.players;
+    }
+
 }
