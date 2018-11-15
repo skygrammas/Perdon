@@ -9,7 +9,7 @@ export class GameBoard {
     end: State;
     challenge: State;
     states: State[];
-    private players: Player[];
+    players: Player[];
 
     constructor() {
         this.players = [];

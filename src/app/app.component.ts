@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { GameBoard } from './models/gameboard';
 import { TransitionCard, StepCard } from './models/cards';
 import { State } from './models/states';
+import { Player } from './models/players';
 
 let canvas: HTMLCanvasElement;
 
@@ -128,7 +129,7 @@ export class AppComponent {
   }
 
   renderBoard() {
-    this.canvasBoard.renderBoard(this.game.currentPlayer().pieceLocation, this.game.currentPlayer().color);
+    this.canvasBoard.renderBoard(this.game.players, this.game.currentPlayer());
   }
 }
 
@@ -179,23 +180,30 @@ export class CanvasBoard {
     this.states = states;
   }
 
-  renderBoard(pieceLocation: State, pieceColor: string) {
+  renderBoard(players: Player[], currPlayer: Player) {
+
+    let playersPos: State[] = [];
+    for (let i in players) {
+      playersPos.push(players[i].pieceLocation);
+    }
+
     this.context.clearRect(0, 0, 1280, 720);
     this.context.fillStyle = 'grey';
     this.context.fillRect(0, 0, 1280, 720);
 
     for (let i = 0; i < this.states.length; i++) {
+      // get the piece location
       let x = this.states[i].xCoord * 130 + 100;
       let y = this.states[i].yCoord * 100 + 72;
 
       // If the state falls in the transition state of current players make the color red
       let color;
-      if (pieceLocation === this.states[i]) {
+      if (playersPos.includes(this.states[i])) {
         const x_pad  = Math.random() * 5;
         const y_pad = Math.random() * 5;
-        draw_player(this.context, pieceColor, x + x_pad, y + y_pad);
+        draw_player(this.context, playersPos[playersPos.indexOf(this.states[i])].color, x + x_pad, y + y_pad);
         color = 'blue';
-      } else if (pieceLocation.possibleTransitions.includes(this.states[i])) {
+      } else if (currPlayer.pieceLocation.possibleTransitions.includes(this.states[i])) {
         console.log('player found');
          color = 'red';
       } else {
