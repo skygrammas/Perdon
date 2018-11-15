@@ -208,7 +208,42 @@ export class CanvasBoard {
       const a_ellipse = new Ellipse(x, y, color);
       a_ellipse.draw(this.context);
     }
+    this.renderCardDeck('Step Card', 600, 150, '#81B7FF', 'blue');
+    this.renderCardDeck('Transition Card', 800, 150, '#81B7FF', 'red');
 
+  }
+
+  renderCardDeck(deckName: string, xOffset: number, yOffset: number, cardBorderColor: string, cardColor: string) {
+    this.context.beginPath();
+    this.context.lineWidth = 2;
+    this.context.strokeStyle = cardBorderColor;
+    this.context.fillStyle = cardColor;
+    this.context.fillRect(xOffset + 5, yOffset + 5, 150, 200);
+    this.context.rect(xOffset + 5, yOffset + 5, 150, 200);
+    this.context.stroke();
+
+    this.context.beginPath();
+    this.context.lineWidth = 2;
+    this.context.strokeStyle = cardBorderColor;
+    this.context.fillStyle = cardColor;
+    this.context.fillRect(xOffset + 10, yOffset + 7, 150, 200);
+    this.context.rect(xOffset + 10, yOffset + 7, 150, 200);
+    this.context.stroke();
+
+    this.context.beginPath();
+    this.context.lineWidth = 2;
+    this.context.strokeStyle = cardBorderColor;
+    this.context.fillStyle = cardColor;
+    this.context.fillRect(xOffset + 15, yOffset + 9, 150, 200);
+    this.context.rect(xOffset + 15, yOffset + 9, 150, 200);
+    this.context.stroke();
+
+    this.context.beginPath();
+    this.context.lineWidth = 2;
+    this.context.strokeStyle = 'white';
+    this.context.font = '30px Sans';
+    this.context.strokeText(deckName, xOffset + 40, yOffset + 110, 100);
+    this.context.stroke();
   }
   // renderStateBoard( players: Player[]) {
   //   pieceLocations = [] // Get the piece location ehre
