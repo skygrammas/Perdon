@@ -140,13 +140,15 @@ export class Ellipse {
   public radius = 10;
   public line_width = 2;
   public color = 'red';
+  public displayNumber;
 
-  constructor(x: number, y: number, color: string = 'red', radius: number = 50, line_width: number = 2) {
+  constructor(x: number, y: number, color: string = 'red', displayNumber: number, radius: number = 50, line_width: number = 2) {
     this.x = x;
     this.y = y;
     this.radius = radius;
     this.color = color;
     this.line_width = line_width;
+    this.displayNumber = displayNumber;
   }
 
   public draw = (ctx: CanvasRenderingContext2D): void => {
@@ -155,10 +157,13 @@ export class Ellipse {
     ctx.strokeStyle = this.color;
     ctx.lineWidth = this.line_width;
     ctx.ellipse(this.x, this.y, this.radius, this.radius * 0.6, 0, 0, 2 * Math.PI);
-    ctx.font = '48px serif'
-    ctx.strokeText('Hello', 50, 50);
     ctx.stroke();
     ctx.restore();
+
+    if (this.displayNumber !== 0){
+      ctx.font = '32px serif';
+      ctx.strokeText(this.displayNumber.toString(), this.x, this.y);
+    }
   }
 }
 
@@ -199,6 +204,7 @@ export class CanvasBoard {
       const y = this.states[i].yCoord * 100 + 72;
       // If the state falls in the transition state of current players make the color red
       let color;
+      let transition: number = 0;
       if (playersPos.includes(this.states[i])) {
         let x_pad  = Math.random() * 5;
         let y_pad = Math.random() * 5;
@@ -208,13 +214,13 @@ export class CanvasBoard {
         x_pad = y_pad = 0;
       } else if (currPlayer.pieceLocation.possibleTransitions.includes(this.states[i])) {
          // find which states transitions to this state
-         const transition: number = currPlayer.pieceLocation.possibleTransitions.indexOf(this.states[i]) + 1;
+         transition = currPlayer.pieceLocation.possibleTransitions.indexOf(this.states[i]) + 1;
          color = 'red';
       } else {
          color = 'green';
       }
 
-      const a_ellipse = new Ellipse(x, y, color);
+      const a_ellipse = new Ellipse(x, y, color, transition);
       a_ellipse.draw(this.context);
     }
 
