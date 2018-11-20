@@ -127,13 +127,15 @@ export class AppComponent {
   endTurn() {
     this.gameEnded = this.game.currentPlayer().pieceLocation.typeOfState === 'End';
     if (this.gameEnded) {
+      this.game = null;
       return;
+    } else {
+      this.game.nextPlayer();
+      this.currentPlayer = this.game.currentPlayer().name;
+      this.stepCard = null;
+      this.transitionCards = [];
+      this.transitionCardsActive = false;
     }
-    this.game.nextPlayer();
-    this.currentPlayer = this.game.currentPlayer().name;
-    this.stepCard = null;
-    this.transitionCards = [];
-    this.transitionCardsActive = false;
   }
 
   renderBoard() {
