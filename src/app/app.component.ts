@@ -77,6 +77,7 @@ export class AppComponent {
     if ( parseInt(stepCard.step, 10) > 0 ) {
       this.transitionCardsActive = true;
     }
+    this.renderBoard();
   }
 
   playerDrawTransitionCards() {
@@ -84,6 +85,7 @@ export class AppComponent {
     for (let i = 0; i < stepsCount; i++) {
       this.transitionCards.push(this.game.drawTransitionCard());
     }
+    this.renderBoard();
   }
 
   useTransitionCard(card: TransitionCard) {
@@ -127,10 +129,12 @@ export class AppComponent {
     this.stepCard = null;
     this.transitionCards = [];
     this.transitionCardsActive = false;
+    this.renderBoard();
   }
 
   renderBoard() {
-    this.canvasBoard.renderBoard(this.game.players, this.game.currentPlayer());
+    console.log(this.stepCard, this.transitionCards);
+    this.canvasBoard.renderBoard(this.game.players, this.game.currentPlayer(), this.stepCard, this.transitionCards);
   }
 }
 
@@ -188,7 +192,7 @@ export class CanvasBoard {
     this.states = states;
   }
 
-  renderBoard(players: Player[], currPlayer: Player) {
+  renderBoard(players: Player[], currPlayer: Player, stepCard: StepCard, transitionCards: TransitionCard[]) {
 
     let playersPos: State[] = [];
     for (let i in players) {
@@ -226,6 +230,15 @@ export class CanvasBoard {
     this.renderCardDeck('Step Card', 600, 150, '#81B7FF', 'blue');
     this.renderCardDeck('Transition Card', 800, 150, '#81B7FF', 'red');
 
+    console.log('step cards', stepCard);
+    if (stepCard) {
+      this.renderDrawnStepCard(stepCard, 600, 400);
+    };
+
+    console.log('transition cards', transitionCards);
+    if (transitionCards.length !== 0) {
+      this.renderDrawnTransitionCard(transitionCards, 800, 400);
+    };
   }
 
   renderCardDeck(deckName: string, xOffset: number, yOffset: number, cardBorderColor: string, cardColor: string) {
@@ -259,6 +272,29 @@ export class CanvasBoard {
     this.context.font = '30px Sans';
     this.context.strokeText(deckName, xOffset + 40, yOffset + 110, 100);
     this.context.stroke();
+  }
+
+  renderDrawnStepCard(card: StepCard, startX: number, startY: number){
+    this.context.beginPath();
+    this.context.lineWidth = 2;
+    this.context.fillStyle = 'blue';
+    this.context.fillRect(startX, startY, 150, 200);
+    this.context.font = '30px Sans';
+    this.context.strokeText(card.step, startX + 40, startY + 110);
+    this.context.stroke();
+  }
+
+  renderDrawnTransitionCard(cards: TransitionCard[], startX: number, startY: number){
+    let currX = startX;
+    cards.forEach(card => {
+      this.context.beginPath();
+      this.context.lineWidth = 2;
+      this.context.fillStyle = 'red';
+      this.context.fillRect(currX, startY, 100, 150);
+      this.context.font = '30px Sans';
+      this.context.strokeText(card.transition, currX + 5, startY + 110);
+      currX += 130;
+    });
   }
   // renderStateBoard( players: Player[]) {
   //   pieceLocations = [] // Get the piece location ehre
