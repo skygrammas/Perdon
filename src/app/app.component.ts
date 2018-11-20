@@ -102,6 +102,13 @@ export class AppComponent {
       if (card.transition === 'epsilon') {
         console.log('Epsilon');
         // need to make user choose any state
+        const epsilonMove = prompt('Enter desired position number (values: 1-3; enter 0 to stay in same position): ');
+        if (+epsilonMove !== 0) {
+          player.pieceLocation = player.pieceLocation.possibleTransitions[+epsilonMove - 1];
+          this.transitionCards = this.transitionCards.filter(item => item !== card);
+        } else {
+          this.transitionCards = [];
+        }
       }
       if (card.transition === 'stop') {
         this.transitionCards = [];
