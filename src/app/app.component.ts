@@ -104,6 +104,13 @@ export class AppComponent {
       if (card.transition === 'epsilon') {
         console.log('Epsilon');
         // need to make user choose any state
+        const epsilonMove = prompt('Enter desired position number (values: 1-3; enter 0 to stay in same position): ');
+        if (+epsilonMove !== 0) {
+          player.pieceLocation = player.pieceLocation.possibleTransitions[+epsilonMove - 1];
+          this.transitionCards = this.transitionCards.filter(item => item !== card);
+        } else {
+          this.transitionCards = [];
+        }
       }
       if (card.transition === 'stop') {
         this.transitionCards = [];
@@ -122,13 +129,19 @@ export class AppComponent {
   endTurn() {
     this.gameEnded = this.game.currentPlayer().pieceLocation.typeOfState === 'End';
     if (this.gameEnded) {
+      this.transitionCards = [];
+      this.stepCard = null;
+      this.game.players = [];
+      this.game = null;
+      alert(this.game.currentPlayer() + ' has won the game!');
       return;
+    } else {
+      this.game.nextPlayer();
+      this.currentPlayer = this.game.currentPlayer().name;
+      this.stepCard = null;
+      this.transitionCards = [];
+      this.transitionCardsActive = false;
     }
-    this.game.nextPlayer();
-    this.currentPlayer = this.game.currentPlayer().name;
-    this.stepCard = null;
-    this.transitionCards = [];
-    this.transitionCardsActive = false;
     this.renderBoard();
   }
 
