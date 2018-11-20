@@ -131,6 +131,7 @@ export class AppComponent {
       this.stepCard = null;
       this.game.players = [];
       this.game = null;
+      alert(this.game.currentPlayer() + ' has won the game!');
       return;
     } else {
       this.game.nextPlayer();
