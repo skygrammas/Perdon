@@ -149,6 +149,32 @@ export class AppComponent {
     console.log(this.stepCard, this.transitionCards);
     this.canvasBoard.renderBoard(this.game.players, this.game.currentPlayer(), this.stepCard, this.transitionCards);
   }
+
+  handleCanvasClicks(event: MouseEvent) {
+    const clickX = event.x;
+    const clickY = event.y;
+    const transitionDeck = this.canvasBoard.deckCoords.transitionDeck;
+    const stepDeck = this.canvasBoard.deckCoords.stepDeck;
+    const cardSize = this.canvasBoard.deckCoords.cardSize;
+    if (this.clickWithinRect(stepDeck.x, stepDeck.y, cardSize.width, cardSize.height, clickX, clickY)) {
+      if (this.stepCard == null) {
+        this.playerDrawStepCard();
+      }
+    }
+    if (this.clickWithinRect(transitionDeck.x, transitionDeck.y, cardSize.width, cardSize.height, clickX, clickY)) {
+      if (this.transitionCards.length === 0) {
+        this.playerDrawTransitionCards();
+      }
+    }
+  }
+
+  private clickWithinRect(x: number, y: number, width: number, height: number, clickX: number, clickY: number): boolean {
+    const left = x;
+    const top = y;
+    const right = x + width;
+    const bot = y + height;
+    return clickX >= left && clickX <= right && clickY >= top && clickY <= bot;
+  }
 }
 
 export class Ellipse {
@@ -177,7 +203,7 @@ export class Ellipse {
     ctx.stroke();
     ctx.restore();
 
-    if (this.displayNumber !== 0){
+    if (this.displayNumber !== 0) {
       ctx.font = '32px serif';
       ctx.strokeText(this.displayNumber.toString(), this.x, this.y);
     }
@@ -200,6 +226,21 @@ export class CanvasBoard {
   private readonly context: CanvasRenderingContext2D;
   private readonly states: State[];
 
+  public readonly deckCoords = {
+    cardSize: {
+      width: 150,
+      height: 200
+    },
+    transitionDeck: {
+      x: 800,
+      y: 150
+    },
+    stepDeck: {
+      x: 600,
+      y: 150
+    }
+  };
+
   constructor (states: State[]) {
     this.context = canvas.getContext('2d');
     this.states = states;
@@ -207,7 +248,7 @@ export class CanvasBoard {
 
   renderBoard(players: Player[], currPlayer: Player, stepCard: StepCard, transitionCards: TransitionCard[]) {
 
-    let playersPos: State[] = [];
+    const playersPos: State[] = [];
     for (let i in players) {
       playersPos.push(players[i].pieceLocation);
     }
@@ -221,7 +262,7 @@ export class CanvasBoard {
       const y = this.states[i].yCoord * 100 + 72;
       // If the state falls in the transition state of current players make the color red
       let color;
-      let transition: number = 0;
+      let transition = 0;
       if (playersPos.includes(this.states[i])) {
         let x_pad  = Math.random() * 5;
         let y_pad = Math.random() * 5;
@@ -240,43 +281,46 @@ export class CanvasBoard {
       const a_ellipse = new Ellipse(x, y, color, transition);
       a_ellipse.draw(this.context);
     }
-    this.renderCardDeck('Step Card', 600, 150, '#81B7FF', 'blue');
-    this.renderCardDeck('Transition Card', 800, 150, '#81B7FF', 'red');
+    this.renderCardDeck('Step Card', this.deckCoords.stepDeck.x, this.deckCoords.stepDeck.y, '#81B7FF', 'blue');
+    this.renderCardDeck('Transition Card', this.deckCoords.transitionDeck.x, this.deckCoords.transitionDeck.y, '#81B7FF', 'red');
 
     console.log('step cards', stepCard);
     if (stepCard) {
       this.renderDrawnStepCard(stepCard, 600, 400);
-    };
+    }
 
     console.log('transition cards', transitionCards);
     if (transitionCards.length !== 0) {
       this.renderDrawnTransitionCard(transitionCards, 800, 400);
-    };
+    }
   }
 
   renderCardDeck(deckName: string, xOffset: number, yOffset: number, cardBorderColor: string, cardColor: string) {
+    const width = this.deckCoords.cardSize.width;
+    const height = this.deckCoords.cardSize.height;
+
     this.context.beginPath();
     this.context.lineWidth = 2;
     this.context.strokeStyle = cardBorderColor;
     this.context.fillStyle = cardColor;
-    this.context.fillRect(xOffset + 5, yOffset + 5, 150, 200);
-    this.context.rect(xOffset + 5, yOffset + 5, 150, 200);
+    this.context.fillRect(xOffset + 5, yOffset + 5, width, height);
+    this.context.rect(xOffset + 5, yOffset + 5, width, height);
     this.context.stroke();
 
     this.context.beginPath();
     this.context.lineWidth = 2;
     this.context.strokeStyle = cardBorderColor;
     this.context.fillStyle = cardColor;
-    this.context.fillRect(xOffset + 10, yOffset + 7, 150, 200);
-    this.context.rect(xOffset + 10, yOffset + 7, 150, 200);
+    this.context.fillRect(xOffset + 10, yOffset + 7, width, height);
+    this.context.rect(xOffset + 10, yOffset + 7, width, height);
     this.context.stroke();
 
     this.context.beginPath();
     this.context.lineWidth = 2;
     this.context.strokeStyle = cardBorderColor;
     this.context.fillStyle = cardColor;
-    this.context.fillRect(xOffset + 15, yOffset + 9, 150, 200);
-    this.context.rect(xOffset + 15, yOffset + 9, 150, 200);
+    this.context.fillRect(xOffset + 15, yOffset + 9, width, height);
+    this.context.rect(xOffset + 15, yOffset + 9, width, height);
     this.context.stroke();
 
     this.context.beginPath();
@@ -287,7 +331,7 @@ export class CanvasBoard {
     this.context.stroke();
   }
 
-  renderDrawnStepCard(card: StepCard, startX: number, startY: number){
+  renderDrawnStepCard(card: StepCard, startX: number, startY: number) {
     this.context.beginPath();
     this.context.lineWidth = 2;
     this.context.fillStyle = 'blue';
@@ -297,7 +341,7 @@ export class CanvasBoard {
     this.context.stroke();
   }
 
-  renderDrawnTransitionCard(cards: TransitionCard[], startX: number, startY: number){
+  renderDrawnTransitionCard(cards: TransitionCard[], startX: number, startY: number) {
     let currX = startX;
     cards.forEach(card => {
       this.context.beginPath();
@@ -309,39 +353,7 @@ export class CanvasBoard {
       currX += 130;
     });
   }
-  // renderStateBoard( players: Player[]) {
-  //   pieceLocations = [] // Get the piece location ehre
-  //   pieceColors = [] // Get the corrosponding piece color here
-
-  //   this.context.clearRect(0, 0, 1280, 720);
-  //   this.context.fillStyle = 'grey';
-  //   this.context.fillRect(0, 0, 1280, 720);
-
-  //   for (let i = 0; i < this.states.length; i++) {
-  //     const x = this.states[i].xCoord * 130 + 100;
-  //     const y = this.states[i].yCoord * 100 + 72;
-
-  //     // If the state falls in the transition state of current players make the color red
-  //     let color;
-  //     if (pieceLocation === this.states[i] ) { // Check if this.states[i] is in pieceLocations
-  //       const x_pad  = Math.random() * 5;
-  //       const y_pad = Math.random() * 5;
-  //       draw_player(this.context, pieceColor, x + x_pad, y + y_pad);
-  //       color = 'blue';
-  //     } else if (pieceLocation.possibleTransitions.includes(this.states[i])) {
-  //       console.log('player found');
-  //        color = 'red';
-  //     } else {
-  //        color = 'green';
-  //     }
-
-  //     const a_ellipse = new Ellipse(x, y, color);
-  //     a_ellipse.draw(this.context);
-  //   }
-
-  // }
 }
-
 
 window.onload = function() {
   canvas = <HTMLCanvasElement>document.getElementById('gameCanvas');
