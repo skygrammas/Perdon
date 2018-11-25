@@ -146,7 +146,6 @@ export class AppComponent {
   }
 
   renderBoard() {
-    console.log(this.stepCard, this.transitionCards);
     this.canvasBoard.renderBoard(this.game.players, this.game.currentPlayer(), this.stepCard, this.transitionCards);
   }
 
@@ -156,15 +155,29 @@ export class AppComponent {
     const transitionDeck = this.canvasBoard.deckCoords.transitionDeck;
     const stepDeck = this.canvasBoard.deckCoords.stepDeck;
     const cardSize = this.canvasBoard.deckCoords.cardSize;
+    const activeTransitions = this.canvasBoard.deckCoords.activeTransitionCards;
     if (this.clickWithinRect(stepDeck.x, stepDeck.y, cardSize.width, cardSize.height, clickX, clickY)) {
       if (this.stepCard == null) {
         this.playerDrawStepCard();
+        return;
       }
     }
     if (this.clickWithinRect(transitionDeck.x, transitionDeck.y, cardSize.width, cardSize.height, clickX, clickY)) {
       if (this.transitionCards.length === 0) {
         this.playerDrawTransitionCards();
+        return;
       }
+    }
+    if (this.transitionCards.length > 0) {
+      this.transitionCards.forEach((card, index) => {
+        if (this.clickWithinRect(activeTransitions[index].x, activeTransitions[index].y, cardSize.width, cardSize.height, clickX, clickY)) {
+            this.useTransitionCard(card);
+            return;
+        }
+      });
+    }
+    if (this.clickWithinRect(0, this.canvasBoard.height - 50, 110, 40, clickX, clickY) && this.transitionCards.length === 0) {
+      this.endTurn();
     }
   }
 
@@ -225,7 +238,8 @@ function draw_player(context: CanvasRenderingContext2D, color: string, x: number
 export class CanvasBoard {
   private readonly context: CanvasRenderingContext2D;
   private readonly states: State[];
-
+  public readonly width = 1280;
+  public readonly height = 720;
   public readonly deckCoords = {
     cardSize: {
       width: 150,
@@ -238,7 +252,21 @@ export class CanvasBoard {
     stepDeck: {
       x: 600,
       y: 150
-    }
+    },
+    activeTransitionCards: [
+      {
+        x: 760,
+        y: 400
+      },
+      {
+        x: 920,
+        y: 400
+      },
+      {
+        x: 1080,
+        y: 400
+      }
+    ]
   };
 
   constructor (states: State[]) {
@@ -253,9 +281,9 @@ export class CanvasBoard {
       playersPos.push(players[i].pieceLocation);
     }
 
-    this.context.clearRect(0, 0, 1280, 720);
+    this.context.clearRect(0, 0, this.width, this.height);
     this.context.fillStyle = 'grey';
-    this.context.fillRect(0, 0, 1280, 720);
+    this.context.fillRect(0, 0, this.width, this.height);
 
     for (let i = 0; i < this.states.length; i++) {
       const x = this.states[i].xCoord * 130 + 100;
@@ -283,15 +311,14 @@ export class CanvasBoard {
     }
     this.renderCardDeck('Step Card', this.deckCoords.stepDeck.x, this.deckCoords.stepDeck.y, '#81B7FF', 'blue');
     this.renderCardDeck('Transition Card', this.deckCoords.transitionDeck.x, this.deckCoords.transitionDeck.y, '#81B7FF', 'red');
-
-    console.log('step cards', stepCard);
     if (stepCard) {
       this.renderDrawnStepCard(stepCard, 600, 400);
     }
-
-    console.log('transition cards', transitionCards);
     if (transitionCards.length !== 0) {
       this.renderDrawnTransitionCard(transitionCards, 800, 400);
+    }
+    if (transitionCards.length === 0) {
+      this.renderEndTurnButton();
     }
   }
 
@@ -341,16 +368,24 @@ export class CanvasBoard {
     this.context.stroke();
   }
 
+  renderEndTurnButton() {
+    this.context.beginPath();
+    this.context.fillRect(0, this.height - 50, 110, 40);
+    this.context.font = '24px Sans';
+    this.context.strokeText('End Turn', 5, this.height - 20);
+    this.context.stroke();
+  }
+
   renderDrawnTransitionCard(cards: TransitionCard[], startX: number, startY: number) {
-    let currX = startX;
-    cards.forEach(card => {
+    const transitionCoords = this.deckCoords.activeTransitionCards;
+    const cardSizes = this.deckCoords.cardSize;
+    cards.forEach((card, index) => {
       this.context.beginPath();
       this.context.lineWidth = 2;
       this.context.fillStyle = 'red';
-      this.context.fillRect(currX, startY, 100, 150);
+      this.context.fillRect(transitionCoords[index].x, transitionCoords[index].y, cardSizes.width, cardSizes.height);
       this.context.font = '30px Sans';
-      this.context.strokeText(card.transition, currX + 5, startY + 110);
-      currX += 130;
+      this.context.strokeText(card.transition, transitionCoords[index].x + 5, transitionCoords[index].y + 110);
     });
   }
 }
